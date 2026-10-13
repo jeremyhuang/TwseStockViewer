@@ -17,11 +17,25 @@ import com.jeremy.twsestock.common.toHundredMillionText
 import com.jeremy.twsestock.common.toLotText
 import com.jeremy.twsestock.common.toPriceText
 
-class StockAdapter : ListAdapter<StockUiModel, StockAdapter.StockViewHolder>(DiffCallback) {
+/**
+ * 股票列表的 Adapter。
+ *
+ * @param onItemClick 點選卡片時呼叫，帶入被點選的個股。
+ */
+class StockAdapter(
+    private val onItemClick: (StockUiModel) -> Unit,
+) : ListAdapter<StockUiModel, StockAdapter.StockViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StockViewHolder {
         val binding = ItemStockBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return StockViewHolder(binding)
+        return StockViewHolder(binding).apply {
+            // 在建立時設定一次監聽器，點選時再用目前的位置取資料，避免每次 bind 都建立新的 lambda。
+            binding.root.setOnClickListener {
+                bindingAdapterPosition
+                    .takeIf { it != RecyclerView.NO_POSITION }
+                    ?.let { onItemClick(getItem(it)) }
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: StockViewHolder, position: Int) {

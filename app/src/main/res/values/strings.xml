@@ -20,4 +20,15 @@
     <string name="tag_above_monthly_average">高於月均</string>
     <string name="tag_below_monthly_average">低於月均</string>
     <string name="tag_equal_monthly_average">持平月均</string>
+
+    <!-- 估值資訊彈窗 -->
+    <!-- %1$s：App 取得資料的時間，例如 2026/10/13 17:20:35 -->
+    <string name="format_stock_info_subtitle">資料時間 %1$s</string>
+    <string name="label_pe_ratio">本益比</string>
+    <string name="hint_pe_ratio">股價 ÷ 每股盈餘</string>
+    <string name="label_dividend_yield" formatted="false">殖利率(%)</string>
+    <string name="hint_dividend_yield">每股股利 ÷ 股價</string>
+    <string name="label_pb_ratio">股價淨值比</string>
+    <string name="hint_pb_ratio">股價 ÷ 每股淨值</string>
+    <string name="action_confirm">確定</string>
 </resources>

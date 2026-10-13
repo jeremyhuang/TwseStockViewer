@@ -55,6 +55,17 @@ fun BigDecimal?.toChangeText(percent: BigDecimal?): String {
 }
 
 /**
+ * 將比率格式化為兩位小數，例如本益比、殖利率、股價淨值比。
+ *
+ * 例如 `25.1` → `"25.10"`。
+ *
+ * @receiver 比率，null 代表證交所未提供（例如虧損公司沒有本益比）。
+ * @return 格式化後的比率；receiver 為 null 時回傳 [PLACEHOLDER]。
+ */
+fun BigDecimal?.toRatioText(): String =
+    this?.let { String.format(Locale.TAIWAN, "%.2f", it) } ?: PLACEHOLDER
+
+/**
  * 將數量格式化為千分位整數。
  *
  * 例如 `45210` → `"45,210"`。

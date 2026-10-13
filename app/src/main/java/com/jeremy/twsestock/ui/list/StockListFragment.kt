@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.jeremy.twsestock.R
 import com.jeremy.twsestock.databinding.FragmentStockListBinding
 import com.jeremy.twsestock.common.toDateTimeText
+import com.jeremy.twsestock.ui.info.StockInfoDialogFragment
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -22,7 +23,7 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
     private var _binding: FragmentStockListBinding? = null
     private val binding get() = checkNotNull(_binding)
 
-    private val stockAdapter = StockAdapter()
+    private val stockAdapter = StockAdapter(onItemClick = ::showStockInfo)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -74,5 +75,18 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
             getString(R.string.format_update_time, it.toDateTimeText())
         }
         stockAdapter.submitList(state.stocks)
+    }
+
+    /**
+     * 顯示個股的估值資訊彈窗。
+     *
+     * 快速連點時只會開一個彈窗。
+     *
+     * @param stock 被點選的個股。
+     */
+    private fun showStockInfo(stock: StockUiModel) {
+        if (childFragmentManager.findFragmentByTag(StockInfoDialogFragment.TAG) != null) return
+        StockInfoDialogFragment.newInstance(stock, viewModel.uiState.value.updatedAt)
+            .show(childFragmentManager, StockInfoDialogFragment.TAG)
     }
 }

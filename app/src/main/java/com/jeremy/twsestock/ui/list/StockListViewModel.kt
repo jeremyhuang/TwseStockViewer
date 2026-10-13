@@ -34,7 +34,6 @@ class StockListViewModel(
                 val snapshot = repository.getMarketSnapshot()
                 _uiState.update {
                     it.copy(
-                        tradeDate = snapshot.tradeDate,
                         updatedAt = snapshot.fetchedAt,
                         stocks = snapshot.stocks.map { stock -> stock.toUiModel() },
                     )

@@ -6,7 +6,7 @@ import java.math.BigDecimal
 /**
  * 股票卡片的顯示用資料。
  *
- * 數值保留原始型別，格式化交由 ui/common/StockFormatExt.kt 的擴充函式在綁定時處理。
+ * 數值保留原始型別，格式化交由 common/StockFormatExt.kt 的擴充函式在綁定時處理。
  * 數值為 null 代表證交所沒有提供該欄位（例如當日無成交），畫面會顯示「-」。
  */
 data class StockUiModel(
@@ -38,4 +38,10 @@ data class StockUiModel(
     val transactionCount: Long?,
     /** 成交金額（元），顯示時換算成億元。 */
     val tradeValue: Long?,
+    /** 本益比；虧損或無資料時為 null。 */
+    val peRatio: BigDecimal?,
+    /** 殖利率（%）。 */
+    val dividendYield: BigDecimal?,
+    /** 股價淨值比。 */
+    val pbRatio: BigDecimal?,
 )
