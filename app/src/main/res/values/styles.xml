@@ -43,4 +43,16 @@
         <item name="android:textAppearance">@style/TextAppearance.TwseStockViewer.QueryChip</item>
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.TwseStockViewer.Pill</item>
     </style>
+
+    <!-- 排序與篩選 Bottom Sheet 的主題：Material 的 Sheet 背景設為透明，背景與圓角完全交給 Compose 的 Surface。
+         Material 的 Sheet 背景會依展開狀態、狀態列 inset 調整位置與圓角，還會疊上一層 primary 色的 elevation 色調，
+         跟 Compose 內容的大小不一定一致；切換選項重新排版時兩者錯開，就會在面板上方露出一塊色塊。
+         只能從樣式設定：BottomSheetBehavior 每次排版都會重設背景，在程式碼裡設成 null 會被蓋掉。 -->
+    <style name="ThemeOverlay.TwseStockViewer.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.TwseStockViewer.BottomSheet</item>
+    </style>
+
+    <style name="Widget.TwseStockViewer.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
 </resources>

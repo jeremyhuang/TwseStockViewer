@@ -16,6 +16,7 @@ import java.io.Serializable
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import androidx.core.graphics.drawable.toDrawable
+import kotlin.math.roundToInt
 
 /**
  * 個股估值資訊彈窗，內容以 Compose 繪製（見 [StockInfoCard]）。
@@ -52,10 +53,11 @@ class StockInfoDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // 圓角與陰影由 Compose 的 Surface 負責，視窗本身改成透明、大小跟著內容。
+        val cardWidthPx = stockInfoCardWidth(resources.configuration.screenWidthDp).value *
+            resources.displayMetrics.density
         dialog?.window?.apply {
             setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-            setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            setLayout(cardWidthPx.roundToInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         }
     }
 
