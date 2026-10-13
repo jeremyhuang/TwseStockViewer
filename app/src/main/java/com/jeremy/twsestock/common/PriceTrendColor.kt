@@ -1,4 +1,4 @@
-package com.jeremy.twsestock.ui.common
+package com.jeremy.twsestock.common
 
 import android.view.View
 import androidx.annotation.ColorInt

@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jeremy.twsestock.R
 import com.jeremy.twsestock.data.model.PriceTrend
 import com.jeremy.twsestock.databinding.ItemStockBinding
-import com.jeremy.twsestock.ui.common.resolveColor
-import com.jeremy.twsestock.ui.common.toChangeText
-import com.jeremy.twsestock.ui.common.toCountText
-import com.jeremy.twsestock.ui.common.toHundredMillionText
-import com.jeremy.twsestock.ui.common.toLotText
-import com.jeremy.twsestock.ui.common.toPriceText
+import com.jeremy.twsestock.common.resolveColor
+import com.jeremy.twsestock.common.toChangeText
+import com.jeremy.twsestock.common.toCountText
+import com.jeremy.twsestock.common.toHundredMillionText
+import com.jeremy.twsestock.common.toLotText
+import com.jeremy.twsestock.common.toPriceText
 
 class StockAdapter : ListAdapter<StockUiModel, StockAdapter.StockViewHolder>(DiffCallback) {
 

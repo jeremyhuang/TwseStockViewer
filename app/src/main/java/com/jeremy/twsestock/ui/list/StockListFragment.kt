@@ -2,6 +2,7 @@ package com.jeremy.twsestock.ui.list
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -9,7 +10,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import com.jeremy.twsestock.R
 import com.jeremy.twsestock.databinding.FragmentStockListBinding
-import com.jeremy.twsestock.ui.common.toDateText
+import com.jeremy.twsestock.common.toDateTimeText
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -68,8 +69,9 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
     }
 
     private fun render(state: StockListUiState) {
-        binding.tbStockList.subtitle = state.tradeDate?.let {
-            getString(R.string.format_update_time, it.toDateText())
+        binding.pbLoading.isVisible = state.isLoading
+        binding.tbStockList.subtitle = state.updatedAt?.let {
+            getString(R.string.format_update_time, it.toDateTimeText())
         }
         stockAdapter.submitList(state.stocks)
     }

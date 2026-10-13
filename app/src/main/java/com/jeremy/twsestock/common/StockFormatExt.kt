@@ -1,8 +1,9 @@
-package com.jeremy.twsestock.ui.common
+package com.jeremy.twsestock.common
 
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -17,6 +18,9 @@ private val HUNDRED_MILLION = BigDecimal(100_000_000)
 
 /** 日期顯示格式，例如 2026/10/08。 */
 private val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
+
+/** 日期時間顯示格式，例如 2026/10/13 17:20:35。 */
+private val DATE_TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
 
 /**
  * 將價格格式化為千分位、兩位小數的文字。
@@ -93,3 +97,13 @@ fun Long?.toHundredMillionText(): String =
  * @return 格式化後的日期；receiver 為 null 時回傳 [PLACEHOLDER]。
  */
 fun LocalDate?.toDateText(): String = this?.format(DATE_FORMATTER) ?: PLACEHOLDER
+
+/**
+ * 將日期時間格式化為「年/月/日 時:分:秒」。
+ *
+ * 例如 `2026-10-13T17:20:35` → `"2026/10/13 17:20:35"`。
+ *
+ * @receiver 日期時間，null 代表沒有資料。
+ * @return 格式化後的日期時間；receiver 為 null 時回傳 [PLACEHOLDER]。
+ */
+fun LocalDateTime?.toDateTimeText(): String = this?.format(DATE_TIME_FORMATTER) ?: PLACEHOLDER

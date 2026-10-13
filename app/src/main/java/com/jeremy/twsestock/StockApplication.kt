@@ -2,6 +2,7 @@ package com.jeremy.twsestock
 
 import android.app.Application
 import com.jeremy.twsestock.di.appModule
+import com.jeremy.twsestock.di.networkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -13,7 +14,7 @@ class StockApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@StockApplication)
-            modules(appModule)
+            modules(appModule, networkModule)
         }
     }
 }

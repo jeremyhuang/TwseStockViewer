@@ -3,7 +3,7 @@
 
     <!-- 股票列表 -->
     <string name="stock_list_title">上市個股行情</string>
-    <!-- %1$s：證交所資料的日期，例如 2026/10/08 -->
+    <!-- %1$s：App 取得資料的時間，例如 2026/10/13 17:20:35 -->
     <string name="format_update_time">更新時間 %1$s</string>
     <string name="action_sort">排序方式</string>
 
