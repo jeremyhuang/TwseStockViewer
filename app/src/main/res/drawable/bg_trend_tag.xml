@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    實心膠囊形狀。填色在程式中透過 backgroundTintList 設定成紅、綠或灰色，
+    這裡的白色只是被 tint 覆蓋的底色。
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@android:color/white" />
+    <corners android:radius="999dp" />
+</shape>

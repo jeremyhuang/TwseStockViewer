@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Light -->
+    <!-- 淺色 -->
     <color name="md_light_primary">#FF1D4690</color>
     <color name="md_light_on_primary">#FFFFFFFF</color>
     <color name="md_light_primary_container">#FFE6EDFA</color>
@@ -11,7 +11,7 @@
     <color name="md_light_on_surface_variant">#FF555D6B</color>
     <color name="md_light_outline">#FFE2E5EA</color>
 
-    <!-- Dark -->
+    <!-- 深色 -->
     <color name="md_dark_primary">#FFB7CBF3</color>
     <color name="md_dark_on_primary">#FF0E2A5C</color>
     <color name="md_dark_primary_container">#FF1F2B42</color>
@@ -21,4 +21,10 @@
     <color name="md_dark_on_surface">#FFECEEF1</color>
     <color name="md_dark_on_surface_variant">#FFA3AAB5</color>
     <color name="md_dark_outline">#FF3A404A</color>
+
+    <!-- 股價漲跌顏色（台股慣例：紅漲綠跌）-->
+    <color name="stock_up">#FFC62828</color>
+    <color name="stock_down">#FF17723A</color>
+    <!-- 月均標籤（實心色塊）上的文字顏色 -->
+    <color name="stock_tag_text">#FFFFFFFF</color>
 </resources>

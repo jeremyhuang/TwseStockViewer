@@ -14,16 +14,11 @@ class MainActivity : AppCompatActivity() {
         applySystemBarInsets()
     }
 
-    /**
-     * targetSdk 35+ draws edge-to-edge, so pad the content away from the
-     * navigation bar and display cutout.
-     */
     private fun applySystemBarInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
-            val bars = insets.getInsets(
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fcv_main)) { view, insets ->
+            insets.getInsets(
                 WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
-            )
-            view.updatePadding(left = bars.left, right = bars.right, bottom = bars.bottom)
+            ).let { view.updatePadding(left = it.left, right = it.right, bottom = it.bottom) }
             insets
         }
     }

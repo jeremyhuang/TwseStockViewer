@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">TwseStockViewer</string>
+
+    <!-- 股票列表 -->
+    <string name="stock_list_title">上市個股行情</string>
+    <!-- %1$s：證交所資料的日期，例如 2026/10/08 -->
+    <string name="format_update_time">更新時間 %1$s</string>
+    <string name="action_sort">排序方式</string>
+
+    <!-- 股票卡片 -->
+    <string name="label_monthly_average">月平均價</string>
+    <string name="label_opening_price">開盤</string>
+    <string name="label_highest_price">最高</string>
+    <string name="label_lowest_price">最低</string>
+    <string name="label_trade_volume">成交量(張)</string>
+    <!-- %1$s：已加上千分位的筆數，例如 45,210 -->
+    <string name="format_transaction_count">成交筆數 %1$s</string>
+    <!-- %1$s：以「億」為單位的金額，例如 342.4 -->
+    <string name="format_trade_value">成交金額 %1$s 億</string>
+    <string name="tag_above_monthly_average">高於月均</string>
+    <string name="tag_below_monthly_average">低於月均</string>
+    <string name="tag_equal_monthly_average">持平月均</string>
 </resources>
