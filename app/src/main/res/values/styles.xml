@@ -9,4 +9,38 @@
     <style name="TextAppearance.TwseStockViewer.ToolbarSubtitle" parent="TextAppearance.Material3.BodySmall">
         <item name="android:textSize">12sp</item>
     </style>
+
+    <!-- 標題列下方條件 chip 的文字 -->
+    <style name="TextAppearance.TwseStockViewer.QueryChip" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <!-- 膠囊形狀（兩端全圓） -->
+    <style name="ShapeAppearance.TwseStockViewer.Pill" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- 排序 chip：實心淺藍底、藍字、前面有方向箭頭、沒有外框 -->
+    <style name="Widget.TwseStockViewer.Chip.Sort" parent="Widget.Material3.Chip.Assist">
+        <item name="chipBackgroundColor">?attr/colorPrimaryContainer</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipIconTint">?attr/colorPrimary</item>
+        <item name="chipIconSize">16dp</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textAppearance">@style/TextAppearance.TwseStockViewer.QueryChip</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.TwseStockViewer.Pill</item>
+    </style>
+
+    <!-- 篩選條件 chip：白底、灰色外框、後面有 × -->
+    <style name="Widget.TwseStockViewer.Chip.Filter" parent="Widget.Material3.Chip.Input">
+        <item name="android:checkable">false</item>
+        <item name="chipBackgroundColor">?attr/colorSurface</item>
+        <item name="chipStrokeColor">@color/query_chip_stroke</item>
+        <item name="closeIconVisible">true</item>
+        <item name="closeIconTint">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textAppearance">@style/TextAppearance.TwseStockViewer.QueryChip</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.TwseStockViewer.Pill</item>
+    </style>
 </resources>

@@ -5,7 +5,16 @@
     <string name="stock_list_title">上市個股行情</string>
     <!-- %1$s：App 取得資料的時間，例如 2026/10/13 17:20:35 -->
     <string name="format_update_time">更新時間 %1$s</string>
-    <string name="action_sort">排序方式</string>
+    <!-- %1$s：App 取得資料的時間；%2$d：篩選後的檔數 -->
+    <string name="format_update_time_filtered">更新時間 %1$s · 篩選後 %2$d 檔</string>
+    <string name="action_query">排序與篩選</string>
+    <!-- %1$s：排序欄位，例如「成交量」；%2$s：排序方向，例如「降序」 -->
+    <string name="format_sort_chip">%1$s · %2$s</string>
+    <!-- %1$s：篩選條件名稱，例如「上漲」；給螢幕閱讀器讀的移除按鈕說明 -->
+    <string name="format_remove_filter">移除篩選：%1$s</string>
+    <string name="query_empty_title">沒有符合條件的股票</string>
+    <string name="query_empty_message">試著放寬篩選條件，或清除全部篩選。</string>
+    <string name="action_clear_filter">清除篩選</string>
 
     <!-- 股票卡片 -->
     <string name="label_monthly_average">月平均價</string>
@@ -31,4 +40,34 @@
     <string name="label_pb_ratio">股價淨值比</string>
     <string name="hint_pb_ratio">股價 ÷ 每股淨值</string>
     <string name="action_confirm">確定</string>
+
+    <!-- 排序與篩選面板 -->
+    <string name="query_sheet_title">排序與篩選</string>
+    <string name="action_reset">重設</string>
+    <string name="query_section_sort">排序依據</string>
+    <string name="query_section_trend">今日漲跌</string>
+    <string name="query_section_average">收盤價 vs 月均價</string>
+    <string name="query_section_type">類型</string>
+    <!-- %1$d：目前條件下符合的檔數 -->
+    <string name="format_query_result_count">符合條件 %1$d 檔 · 點選即套用</string>
+    <string name="sort_field_code">股票代號</string>
+    <string name="sort_field_closing_price">收盤價</string>
+    <string name="sort_field_change">漲跌價差</string>
+    <string name="sort_field_change_percent">漲跌幅</string>
+    <string name="sort_field_trade_volume">成交量</string>
+    <string name="sort_field_trade_value">成交金額</string>
+    <string name="sort_field_pe_ratio">本益比</string>
+    <string name="sort_field_dividend_yield">殖利率</string>
+    <string name="sort_field_pb_ratio">股價淨值比</string>
+    <string name="sort_order_descending">降序（高 → 低）</string>
+    <string name="sort_order_ascending">升序（低 → 高）</string>
+    <string name="sort_order_descending_short">降序</string>
+    <string name="sort_order_ascending_short">升序</string>
+    <string name="filter_trend_up">上漲</string>
+    <string name="filter_trend_down">下跌</string>
+    <string name="filter_trend_flat">平盤</string>
+    <string name="filter_average_above">高於月均</string>
+    <string name="filter_average_below">低於月均</string>
+    <string name="filter_type_stock">個股</string>
+    <string name="filter_type_etf">ETF</string>
 </resources>

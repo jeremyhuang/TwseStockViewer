@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 篩選 chip 的外框：次要文字色加 40% 透明度，與 Compose 面板裡的 chip 外框一致。 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:alpha="0.4" android:color="?attr/colorOnSurfaceVariant" />
+</selector>

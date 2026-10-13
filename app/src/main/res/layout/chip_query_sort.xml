@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 標題列下方的排序 chip，例如「↓ 成交量 · 降序」，點了開啟排序與篩選面板。 -->
+<com.google.android.material.chip.Chip xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.TwseStockViewer.Chip.Sort"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:chipIcon="@drawable/ic_arrow_downward"
+    tools:text="成交量 · 降序" />
