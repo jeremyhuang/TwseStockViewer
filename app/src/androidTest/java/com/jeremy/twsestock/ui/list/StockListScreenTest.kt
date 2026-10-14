@@ -133,6 +133,17 @@ class StockListScreenTest {
     /** 從列表中間往下滑（列表往回捲；在最上方時觸發下拉重新整理），同樣避開螢幕邊緣的系統手勢區。 */
     private fun swipeFromCenterDown() = GeneralSwipeAction(Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.BOTTOM_CENTER, Press.FINGER)
 
+    /**
+     * 讓列表直接跳到指定位置（不經過滑動手勢，標題列不會收起）。
+     *
+     * @param position 要跳到的項目位置。
+     */
+    private fun jumpListTo(position: Int) {
+        scenario.onActivity { activity ->
+            activity.findViewById<RecyclerView>(R.id.rv_stock_list).scrollToPosition(position)
+        }
+    }
+
     @After
     fun tearDown() {
         if (::scenario.isInitialized) scenario.close()
@@ -374,5 +385,32 @@ class StockListScreenTest {
         println("沒有顯示錯誤畫面")
         onView(withId(R.id.ll_error)).check(matches(not(isDisplayed())))
     }
-}
 
+    /**
+     * 列表捲到下方時出現「回到頂部」按鈕，點了回到第一筆，按鈕隨即消失。
+     *
+     * 測試對象：StockListFragment 的 fab_scroll_top → scrollToTop
+     */
+    @Test
+    fun scrollTopButton_appearsWhenScrolled_returnsToTop() {
+        launch(FakeTwseApi(fillerCount = 30))
+
+        println("一開始不顯示回到頂部按鈕")
+        onView(withId(R.id.fab_scroll_top)).check(matches(not(isDisplayed())))
+
+        println("列表跳到第 25 筆")
+        jumpListTo(25)
+        println("第一筆「鴻海」已不在畫面上")
+        onView(withText("鴻海")).check(doesNotExist())
+        println("顯示回到頂部按鈕")
+        onView(withId(R.id.fab_scroll_top)).check(matches(isDisplayed()))
+
+        println("點選回到頂部按鈕")
+        onView(withId(R.id.fab_scroll_top)).perform(click())
+
+        println("第一筆「鴻海」回到畫面上")
+        onView(withText("鴻海")).check(matches(isDisplayed()))
+        println("回到頂部按鈕已隱藏")
+        onView(withId(R.id.fab_scroll_top)).check(matches(not(isDisplayed())))
+    }
+}

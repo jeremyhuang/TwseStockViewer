@@ -18,6 +18,7 @@
     <string name="load_failed_title">無法載入股價資料</string>
     <string name="load_failed_message">請確認網路連線後再試一次。</string>
     <string name="action_retry">重試</string>
+    <string name="action_scroll_to_top">回到頂部</string>
     <string name="refresh_failed">更新失敗，目前顯示的是上一次的資料</string>
 
     <!-- 股票卡片 -->

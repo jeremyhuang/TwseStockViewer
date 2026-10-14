@@ -7,14 +7,21 @@
     tools:context=".ui.list.StockListFragment">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/abl_stock_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
+        android:background="?attr/colorSurface"
+        android:fitsSystemWindows="true"
+        android:stateListAnimator="@null"
+        app:elevation="0dp"
+        app:liftOnScroll="false"
+        app:statusBarForeground="?attr/colorSurface">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/tb_stock_list"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorSurface"
             app:layout_scrollFlags="scroll|enterAlways|snap"
             app:menu="@menu/menu_stock_list"
             app:subtitleTextAppearance="@style/TextAppearance.TwseStockViewer.ToolbarSubtitle"
@@ -27,6 +34,7 @@
             android:id="@+id/hsv_query"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/colorSurface"
             android:scrollbars="none"
             android:visibility="gone"
             tools:visibility="visible">
@@ -155,6 +163,19 @@
             android:layout_marginTop="16dp"
             android:text="@string/action_retry" />
     </LinearLayout>
+
+    <!-- 列表往下捲超過一段距離後出現，點了回到頂部 -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_scroll_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/action_scroll_to_top"
+        android:visibility="gone"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/ic_arrow_upward"
+        tools:visibility="visible" />
 
     <!-- 第一次載入或按「重試」時顯示，載入完成後隱藏 -->
     <com.google.android.material.progressindicator.CircularProgressIndicator

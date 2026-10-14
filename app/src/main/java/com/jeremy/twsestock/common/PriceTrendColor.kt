@@ -10,7 +10,7 @@ import com.jeremy.twsestock.data.model.PriceTrend
 /**
  * 取得價格趨勢對應的文字顏色（台股慣例：紅漲、綠跌、平盤灰色）。
  *
- * 紅綠色來自 `R.color.stock_up` / `R.color.stock_down`，深色模式會自動改用 values-night 的版本；
+ * 紅綠色來自 `R.color.stock_up` / `R.color.stock_down`；
  * 平盤使用主題的次要文字色 `colorOnSurfaceVariant`。
  *
  * @receiver 價格趨勢。

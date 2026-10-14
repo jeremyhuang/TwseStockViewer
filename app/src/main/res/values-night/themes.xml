@@ -9,5 +9,13 @@
         <item name="colorOnSurface">@color/md_dark_on_surface</item>
         <item name="colorOnSurfaceVariant">@color/md_dark_on_surface_variant</item>
         <item name="colorOutline">@color/md_dark_outline</item>
+
+        <item name="colorSurfaceContainerLowest">@color/md_dark_surface</item>
+        <item name="colorSurfaceContainerLow">@color/md_dark_surface</item>
+        <item name="colorSurfaceContainer">@color/md_dark_surface</item>
+        <item name="colorSurfaceContainerHigh">@color/md_dark_surface</item>
+        <item name="colorSurfaceContainerHighest">@color/md_dark_surface</item>
+        <!-- 不依元件高度疊上 primary 色調，避免白色背景被染成淡紫色。 -->
+        <item name="elevationOverlayEnabled">false</item>
     </style>
 </resources>

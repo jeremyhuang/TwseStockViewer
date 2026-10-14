@@ -1,5 +1,6 @@
 package com.jeremy.twsestock.ui.list
 
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.OptIn
@@ -9,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
@@ -92,6 +94,46 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
             layoutManager = GridLayoutManager(context, resources.getInteger(R.integer.stock_list_span_count))
             adapter = stockAdapter
             setHasFixedSize(true)
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    val firstVisible = (recyclerView.layoutManager as GridLayoutManager).findFirstVisibleItemPosition()
+                    setScrollTopButtonVisible(firstVisible >= SCROLL_TOP_BUTTON_THRESHOLD)
+                }
+            })
+        }
+        binding.fabScrollTop.setOnClickListener { scrollToTop() }
+    }
+
+    /**
+     * 捲回列表最上面，並展開標題列。
+     *
+     * 離頂部很遠時先直接跳到接近頂部的位置再平滑捲動，避免一千多筆資料要捲很久；
+     * 系統關閉動畫時（例如 UI 測試）直接跳到頂部。
+     */
+    private fun scrollToTop() {
+        val list = binding.rvStockList
+        val firstVisible = (list.layoutManager as GridLayoutManager).findFirstVisibleItemPosition()
+        if (!ValueAnimator.areAnimatorsEnabled()) {
+            list.scrollToPosition(0)
+        } else {
+            if (firstVisible > SMOOTH_SCROLL_MAX_DISTANCE) list.scrollToPosition(SMOOTH_SCROLL_MAX_DISTANCE)
+            list.smoothScrollToPosition(0)
+        }
+        binding.ablStockList.setExpanded(true, ValueAnimator.areAnimatorsEnabled())
+        setScrollTopButtonVisible(false)
+    }
+
+    /**
+     * 顯示或隱藏「回到頂部」按鈕，使用 FAB 內建的縮放動畫；系統關閉動畫時直接切換。
+     *
+     * @param visible 是否顯示。
+     */
+    private fun setScrollTopButtonVisible(visible: Boolean) {
+        val fab = binding.fabScrollTop
+        when {
+            !ValueAnimator.areAnimatorsEnabled() -> fab.isVisible = visible
+            visible -> fab.show()
+            else -> fab.hide()
         }
     }
 
@@ -240,5 +282,13 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
         if (childFragmentManager.findFragmentByTag(StockInfoDialogFragment.TAG) != null) return
         StockInfoDialogFragment.newInstance(stock, viewModel.uiState.value.updatedAt)
             .show(childFragmentManager, StockInfoDialogFragment.TAG)
+    }
+
+    private companion object {
+        /** 第一個可見項目超過這個位置時顯示「回到頂部」按鈕。 */
+        const val SCROLL_TOP_BUTTON_THRESHOLD = 10
+
+        /** 平滑捲動的最大距離（項目數）；更遠時先直接跳近再平滑捲動。 */
+        const val SMOOTH_SCROLL_MAX_DISTANCE = 10
     }
 }
