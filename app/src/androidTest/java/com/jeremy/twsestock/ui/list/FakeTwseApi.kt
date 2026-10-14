@@ -13,10 +13,18 @@ import com.jeremy.twsestock.data.remote.dto.ValuationDto
  *
  * @param fillerCount 額外加入的填充股票數量，用來讓列表長到可以捲動。
  * 填充股票的成交量最小，預設排序下一定排在上面三檔之後，不影響其他測試。
+ * @property error 設定後每支 API 都拋出這個例外，用來模擬斷網；設回 null 即恢復。
+ * @property addedStocks 額外追加的股票，用來模擬重新整理後拿到新資料。
  */
-class FakeTwseApi(private val fillerCount: Int = 0) : TwseApi {
+class FakeTwseApi(
+    private val fillerCount: Int = 0,
+    @Volatile var error: Throwable? = null,
+) : TwseApi {
 
-    override suspend fun getDailyTrading(): List<StockDayDto> = listOf(
+    @Volatile
+    var addedStocks: List<StockDayDto> = emptyList()
+
+    override suspend fun getDailyTrading(): List<StockDayDto> = error?.let { throw it } ?: (listOf(
         StockDayDto(
             date = "1151008", code = "2330", name = "台積電",
             tradeVolume = "32451203", tradeValue = "34236000000",
@@ -42,15 +50,15 @@ class FakeTwseApi(private val fillerCount: Int = 0) : TwseApi {
             openingPrice = "10.00", highestPrice = "10.00", lowestPrice = "10.00",
             closingPrice = "10.00", change = "0.0000", transaction = "1",
         )
-    }
+    } + addedStocks)
 
-    override suspend fun getMonthlyAverages(): List<StockDayAvgDto> = listOf(
+    override suspend fun getMonthlyAverages(): List<StockDayAvgDto> = error?.let { throw it } ?: listOf(
         StockDayAvgDto(code = "2330", monthlyAveragePrice = "1032.50"),
         StockDayAvgDto(code = "2317", monthlyAveragePrice = "203.20"),
         StockDayAvgDto(code = "0050", monthlyAveragePrice = "176.40"),
     )
 
-    override suspend fun getValuations(): List<ValuationDto> = listOf(
+    override suspend fun getValuations(): List<ValuationDto> = error?.let { throw it } ?: listOf(
         ValuationDto(code = "2330", peRatio = "25.12", dividendYield = "1.52", pbRatio = "7.45"),
         ValuationDto(code = "2317", peRatio = "14.30", dividendYield = "2.66", pbRatio = "1.85"),
     )

@@ -5,8 +5,12 @@ import java.time.LocalDateTime
 
 /** 股票列表畫面的狀態。 */
 data class StockListUiState(
-    /** 是否正在載入資料；第一次進入畫面時為 true，載入完成（成功或失敗）後為 false。 */
+    /** 是否正在載入資料（第一次進入或按「重試」）；載入完成（成功或失敗）後為 false。 */
     val isLoading: Boolean = true,
+    /** 是否正在下拉重新整理。 */
+    val isRefreshing: Boolean = false,
+    /** 載入失敗且沒有任何資料可顯示；畫面顯示錯誤提示與「重試」按鈕。 */
+    val isLoadFailed: Boolean = false,
     /** App 取得資料的時間；尚未載入時為 null，標題列不顯示副標題。 */
     val updatedAt: LocalDateTime? = null,
     /** 目前的排序與篩選條件。 */

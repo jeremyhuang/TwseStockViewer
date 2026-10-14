@@ -15,6 +15,10 @@
     <string name="query_empty_title">沒有符合條件的股票</string>
     <string name="query_empty_message">試著放寬篩選條件，或清除全部篩選。</string>
     <string name="action_clear_filter">清除篩選</string>
+    <string name="load_failed_title">無法載入股價資料</string>
+    <string name="load_failed_message">請確認網路連線後再試一次。</string>
+    <string name="action_retry">重試</string>
+    <string name="refresh_failed">更新失敗，目前顯示的是上一次的資料</string>
 
     <!-- 股票卡片 -->
     <string name="label_monthly_average">月平均價</string>

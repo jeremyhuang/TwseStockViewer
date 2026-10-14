@@ -13,7 +13,10 @@ import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.material.chip.Chip
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.snackbar.Snackbar
 import com.jeremy.twsestock.R
+import com.jeremy.twsestock.common.fadeVisible
 import com.jeremy.twsestock.common.toDateTimeText
 import com.jeremy.twsestock.databinding.FragmentStockListBinding
 import com.jeremy.twsestock.ui.info.StockInfoDialogFragment
@@ -25,6 +28,7 @@ import com.jeremy.twsestock.ui.query.StockQuerySheetFragment
 import com.jeremy.twsestock.ui.query.TrendFilter
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.time.LocalDateTime
 
 /** 主畫面：上市個股列表。 */
 class StockListFragment : Fragment(R.layout.fragment_stock_list) {
@@ -42,14 +46,21 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
     /** 上一次畫到畫面上的查詢條件，用來判斷條件是否改變。 */
     private var renderedQuery: StockQuery? = null
 
+    /** 上一次畫到畫面上的資料時間，用來判斷是否拿到新資料（例如重新整理完成）。 */
+    private var renderedUpdatedAt: LocalDateTime? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentStockListBinding.bind(view)
         renderedQuery = null
+        renderedUpdatedAt = null
         setupToolbar()
         setupList()
+        setupRefresh()
         setupEmptyState()
+        setupErrorState()
         observeUiState()
+        observeEvents()
     }
 
     override fun onDestroyView() {
@@ -84,8 +95,36 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
         }
     }
 
+    private fun setupRefresh() {
+        binding.srlStockList.apply {
+            setColorSchemeColors(MaterialColors.getColor(this, androidx.appcompat.R.attr.colorPrimary))
+            setProgressBackgroundColorSchemeColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurface))
+            setOnRefreshListener { viewModel.onRefresh() }
+        }
+    }
+
     private fun setupEmptyState() {
         binding.btnClearFilter.setOnClickListener { viewModel.onFiltersClear() }
+    }
+
+    private fun setupErrorState() {
+        binding.btnRetry.setOnClickListener { viewModel.onRetry() }
+    }
+
+    /** 處理只需要一次的事件，例如重新整理失敗時顯示 Snackbar。 */
+    private fun observeEvents() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.events.collect { event ->
+                    when (event) {
+                        StockListEvent.RefreshFailed ->
+                            Snackbar.make(binding.root, R.string.refresh_failed, Snackbar.LENGTH_LONG)
+                                .setAction(R.string.action_retry) { viewModel.onRefresh() }
+                                .show()
+                    }
+                }
+            }
+        }
     }
 
     private fun observeUiState() {
@@ -98,7 +137,11 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
 
     private fun render(state: StockListUiState) {
         binding.pbLoading.isVisible = state.isLoading
-        binding.llEmpty.isVisible = state.isFilteredEmpty
+        binding.srlStockList.isRefreshing = state.isRefreshing
+        // 第一次載入或錯誤畫面時不能下拉，避免跟中央的轉圈、重試按鈕重複。
+        binding.srlStockList.isEnabled = state.totalCount > 0
+        binding.llEmpty.fadeVisible(state.isFilteredEmpty)
+        binding.llError.fadeVisible(state.isLoadFailed && !state.isLoading)
         binding.tbStockList.subtitle = state.updatedAt?.let { updatedAt ->
             if (state.query.hasFilter) {
                 getString(R.string.format_update_time_filtered, updatedAt.toDateTimeText(), state.stocks.size)
@@ -113,11 +156,20 @@ class StockListFragment : Fragment(R.layout.fragment_stock_list) {
             renderQueryChips(state.query)
             renderedQuery = state.query
         }
-        binding.hsvQuery.isVisible = !state.isLoading
+        binding.hsvQuery.isVisible = state.totalCount > 0
+
+        // 拿到新資料，或換了排序、篩選條件時，播放卡片依序滑入的進場動畫。
+        val dataChanged = state.updatedAt != renderedUpdatedAt
+        renderedUpdatedAt = state.updatedAt
+        val shouldAnimate = queryChanged || dataChanged
         stockAdapter.submitList(state.stocks) {
-            // 換了排序或篩選條件，回到列表最上面。
             // callback 是非同步的，執行時畫面可能已經銷毀，所以用 _binding。
-            if (queryChanged) _binding?.rvStockList?.scrollToPosition(0)
+            val list = _binding?.rvStockList ?: return@submitList
+            if (shouldAnimate) {
+                // 回到列表最上面，再重新播放進場動畫。
+                list.scrollToPosition(0)
+                list.scheduleLayoutAnimation()
+            }
         }
     }
 

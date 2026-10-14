@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 列表進場：每張卡片依序延遲一點點出現（載入完成、重新整理、換排序或篩選時播放） -->
+<layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
+    android:animation="@anim/item_stock_enter"
+    android:animationOrder="normal"
+    android:delay="12%" />

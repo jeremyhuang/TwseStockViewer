@@ -92,6 +92,77 @@ class StockListViewModelTest {
         assertEquals(0, viewModel.state.stocks.size)
         println("isFilteredEmpty：期待 false，實際 ${viewModel.state.isFilteredEmpty}")
         assertEquals(false, viewModel.state.isFilteredEmpty)
+        println("isLoadFailed（顯示錯誤畫面）：期待 true，實際 ${viewModel.state.isLoadFailed}")
+        assertEquals(true, viewModel.state.isLoadFailed)
+    }
+
+    /**
+     * 載入失敗後按重試，成功時錯誤畫面消失並顯示資料。
+     *
+     * 測試對象：[StockListViewModel.onRetry]
+     */
+    @Test
+    fun onRetry_afterFailure_loadsDataAndClearsError() = runTest {
+        val api = FakeTwseApi(error = IOException("network"))
+        val viewModel = createViewModel(api)
+        observe(viewModel)
+
+        api.error = null
+        viewModel.onRetry()
+
+        println("重試後 isLoadFailed：期待 false，實際 ${viewModel.state.isLoadFailed}")
+        assertEquals(false, viewModel.state.isLoadFailed)
+        println("重試後 isLoading：期待 false，實際 ${viewModel.state.isLoading}")
+        assertEquals(false, viewModel.state.isLoading)
+        println("重試後列表：期待 [2317, 2330, 0050]，實際 ${viewModel.codes}")
+        assertEquals(listOf("2317", "2330", "0050"), viewModel.codes)
+    }
+
+    /**
+     * 下拉重新整理失敗時保留原本的資料、不顯示錯誤畫面，並送出一次「更新失敗」事件。
+     *
+     * 測試對象：[StockListViewModel.onRefresh]、[StockListViewModel.events]
+     */
+    @Test
+    fun onRefresh_failureWithExistingData_keepsDataAndEmitsEvent() = runTest {
+        val api = FakeTwseApi()
+        val viewModel = createViewModel(api)
+        observe(viewModel)
+        val events = mutableListOf<StockListEvent>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.events.collect { events += it } }
+
+        api.error = IOException("network")
+        viewModel.onRefresh()
+
+        println("更新失敗後列表（保留舊資料）：期待 [2317, 2330, 0050]，實際 ${viewModel.codes}")
+        assertEquals(listOf("2317", "2330", "0050"), viewModel.codes)
+        println("更新失敗後 isLoadFailed（有資料就不顯示錯誤畫面）：期待 false，實際 ${viewModel.state.isLoadFailed}")
+        assertEquals(false, viewModel.state.isLoadFailed)
+        println("更新失敗後 isRefreshing：期待 false，實際 ${viewModel.state.isRefreshing}")
+        assertEquals(false, viewModel.state.isRefreshing)
+        println("收到的事件：期待 [RefreshFailed]，實際 $events")
+        assertEquals(listOf(StockListEvent.RefreshFailed), events)
+    }
+
+    /**
+     * 下拉重新整理成功時更新資料並結束重新整理狀態。
+     *
+     * 測試對象：[StockListViewModel.onRefresh]
+     */
+    @Test
+    fun onRefresh_success_updatesDataAndStopsRefreshing() = runTest {
+        val api = FakeTwseApi()
+        val viewModel = createViewModel(api)
+        observe(viewModel)
+
+        viewModel.onRefresh()
+
+        println("重新整理後 isRefreshing：期待 false，實際 ${viewModel.state.isRefreshing}")
+        assertEquals(false, viewModel.state.isRefreshing)
+        println("重新整理後列表：期待 [2317, 2330, 0050]，實際 ${viewModel.codes}")
+        assertEquals(listOf("2317", "2330", "0050"), viewModel.codes)
+        println("重新整理後 isLoadFailed：期待 false，實際 ${viewModel.state.isLoadFailed}")
+        assertEquals(false, viewModel.state.isLoadFailed)
     }
 
     /**

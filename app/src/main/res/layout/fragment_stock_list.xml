@@ -41,16 +41,25 @@
         </HorizontalScrollView>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_stock_list"
+    <!-- 下拉重新整理；列表在最上方時往下拉觸發 -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srl_stock_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="8dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:itemCount="4"
-        tools:listitem="@layout/item_stock" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- layoutAnimation：卡片依序滑入的進場動畫，程式在資料或條件改變時重新播放 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_stock_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:layoutAnimation="@anim/layout_stock_list_enter"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="8dp"
+            tools:itemCount="4"
+            tools:listitem="@layout/item_stock" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <!-- 篩選後沒有符合條件的股票時顯示 -->
     <LinearLayout
@@ -100,7 +109,54 @@
             android:text="@string/action_clear_filter" />
     </LinearLayout>
 
-    <!-- 第一次載入資料時顯示，載入完成後隱藏 -->
+    <!-- 載入失敗且沒有資料可顯示時出現 -->
+    <LinearLayout
+        android:id="@+id/ll_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingHorizontal="32dp"
+        android:visibility="gone"
+        tools:visibility="gone">
+
+        <ImageView
+            android:id="@+id/iv_error"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_cloud_off"
+            app:tint="?attr/colorOnSurfaceVariant" />
+
+        <TextView
+            android:id="@+id/tv_error_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/load_failed_title"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_error_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="@string/load_failed_message"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <Button
+            android:id="@+id/btn_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/action_retry" />
+    </LinearLayout>
+
+    <!-- 第一次載入或按「重試」時顯示，載入完成後隱藏 -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/pb_loading"
         android:layout_width="wrap_content"

@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.GeneralLocation
@@ -27,6 +28,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.jeremy.twsestock.MainActivity
 import com.jeremy.twsestock.R
 import com.jeremy.twsestock.data.mapper.StockMapper
+import com.jeremy.twsestock.data.remote.dto.StockDayDto
 import com.jeremy.twsestock.data.repository.StockRepository
 import com.jeremy.twsestock.ui.query.StockQuerySheetFragment
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +43,7 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import java.io.IOException
 
 /**
  * 股票列表畫面的 UI 測試：列表顯示、估值彈窗、排序與篩選。
@@ -125,10 +128,10 @@ class StockListScreenTest {
      * 不用 Espresso 內建的 swipeUp()：它從 View 的最底部開始滑，列表延伸到螢幕底部（edge-to-edge），
      * 起點會落在手勢導覽列，系統當成「回到桌面」手勢，App 就被切到背景了。
      */
-    private fun scrollListDown() = GeneralSwipeAction(Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.TOP_CENTER, Press.FINGER)
+    private fun swipeFromCenterUp() = GeneralSwipeAction(Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.TOP_CENTER, Press.FINGER)
 
-    /** 從列表中間往下滑（列表往回捲），同樣避開螢幕邊緣的系統手勢區。 */
-    private fun scrollListUp() = GeneralSwipeAction(Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.BOTTOM_CENTER, Press.FINGER)
+    /** 從列表中間往下滑（列表往回捲；在最上方時觸發下拉重新整理），同樣避開螢幕邊緣的系統手勢區。 */
+    private fun swipeFromCenterDown() = GeneralSwipeAction(Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.BOTTOM_CENTER, Press.FINGER)
 
     @After
     fun tearDown() {
@@ -273,7 +276,7 @@ class StockListScreenTest {
         onView(withId(R.id.hsv_query)).check(matches(isDisplayed()))
 
         println("列表往下捲")
-        onView(withId(R.id.rv_stock_list)).perform(scrollListDown())
+        onView(withId(R.id.rv_stock_list)).perform(swipeFromCenterUp())
 
         println("標題列已收起（不在畫面上）")
         onView(withId(R.id.tb_stock_list)).check(matches(not(isDisplayed())))
@@ -281,9 +284,95 @@ class StockListScreenTest {
         onView(withId(R.id.hsv_query)).check(matches(isDisplayed()))
 
         println("列表往回捲")
-        onView(withId(R.id.rv_stock_list)).perform(scrollListUp())
+        onView(withId(R.id.rv_stock_list)).perform(swipeFromCenterDown())
 
         println("標題列重新完整顯示")
         onView(withId(R.id.tb_stock_list)).check(matches(isCompletelyDisplayed()))
     }
+
+    /**
+     * 第一次載入失敗時顯示錯誤畫面；網路恢復後按「重試」會載入資料並隱藏錯誤畫面。
+     *
+     * 測試對象：[StockListUiState.isLoadFailed] → ll_error、btn_retry → [StockListViewModel.onRetry]
+     */
+    @Test
+    fun loadFailure_showsErrorView_retryLoadsData() {
+        val api = FakeTwseApi(error = IOException("network"))
+        launch(api)
+
+        println("顯示錯誤畫面「${string(R.string.load_failed_title)}」")
+        onView(withId(R.id.ll_error)).check(matches(isDisplayed()))
+        onView(withText(R.string.load_failed_title)).check(matches(isDisplayed()))
+        println("列表沒有任何股票")
+        onView(withText("鴻海")).check(doesNotExist())
+
+        println("網路恢復後點選「${string(R.string.action_retry)}」")
+        api.error = null
+        onView(withId(R.id.btn_retry)).perform(click())
+
+        println("錯誤畫面已隱藏")
+        onView(withId(R.id.ll_error)).check(matches(not(isDisplayed())))
+        val codes = listedCodes()
+        println("重試後的列表：期待 [2317, 2330, 0050]，實際 $codes")
+        assertEquals(listOf("2317", "2330", "0050"), codes)
+    }
+
+    /**
+     * 下拉重新整理會重新取得資料，新資料會出現在列表上。
+     *
+     * 測試對象：srl_stock_list → [StockListViewModel.onRefresh]
+     */
+    @Test
+    fun pullToRefresh_reloadsLatestData() {
+        val api = FakeTwseApi()
+        launch(api)
+
+        val before = listedCodes()
+        println("重新整理前的列表：期待 [2317, 2330, 0050]，實際 $before")
+        assertEquals(listOf("2317", "2330", "0050"), before)
+
+        println("模擬證交所有新資料：加入成交量最大的「台泥」")
+        api.addedStocks = listOf(
+            StockDayDto(
+                date = "1151008", code = "1101", name = "台泥",
+                tradeVolume = "99999999", tradeValue = "3156000000",
+                openingPrice = "32.15", highestPrice = "32.40", lowestPrice = "32.00",
+                closingPrice = "32.20", change = "0.0500", transaction = "5210",
+            ),
+        )
+
+        println("在列表上往下拉")
+        onView(withId(R.id.rv_stock_list)).perform(swipeFromCenterDown())
+
+        val after = listedCodes()
+        println("重新整理後的列表：期待 [1101, 2317, 2330, 0050]，實際 $after")
+        assertEquals(listOf("1101", "2317", "2330", "0050"), after)
+        println("重新整理的轉圈已結束")
+        onView(withId(R.id.srl_stock_list)).check { view, _ ->
+            assertEquals(false, (view as SwipeRefreshLayout).isRefreshing)
+        }
+    }
+
+    /**
+     * 下拉重新整理失敗時，保留原本的列表並以 Snackbar 提示，不顯示錯誤畫面。
+     *
+     * 測試對象：[StockListViewModel.onRefresh] → [StockListEvent.RefreshFailed] → Snackbar
+     */
+    @Test
+    fun pullToRefreshFailure_keepsListAndShowsSnackbar() {
+        val api = FakeTwseApi()
+        launch(api)
+
+        println("模擬斷網後在列表上往下拉")
+        api.error = IOException("network")
+        onView(withId(R.id.rv_stock_list)).perform(swipeFromCenterDown())
+
+        println("顯示 Snackbar「${string(R.string.refresh_failed)}」")
+        onView(withText(R.string.refresh_failed)).check(matches(isDisplayed()))
+        println("列表仍保留原本的資料（鴻海還在）")
+        onView(withText("鴻海")).check(matches(isDisplayed()))
+        println("沒有顯示錯誤畫面")
+        onView(withId(R.id.ll_error)).check(matches(not(isDisplayed())))
+    }
 }
+

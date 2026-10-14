@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 列表卡片的進場動畫：由下往上滑入並淡入 -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="250"
+    android:interpolator="@android:anim/decelerate_interpolator">
+    <translate
+        android:fromYDelta="12%"
+        android:toYDelta="0" />
+    <alpha
+        android:fromAlpha="0"
+        android:toAlpha="1" />
+</set>
