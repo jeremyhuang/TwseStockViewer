@@ -37,6 +37,14 @@ android {
         compose = true
         buildConfig = true
     }
+    testOptions {
+        // UI 測試時關閉系統動畫，避免 Bottom Sheet、Dialog 的動畫還沒跑完就去檢查畫面而失敗。
+        animationsDisabled = true
+        // 單元測試跑在 JVM 上，android.jar 裡的方法都是空殼，預設一呼叫就拋例外。
+        // OkHttp 5 會偵測到 Android 並呼叫 android.util.Log，改成回傳預設值（false、0、null）後，
+        // OkHttp 會判斷不是真的 Android 環境，改用一般 JVM 的實作。
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -79,4 +87,24 @@ dependencies {
     testImplementation(libs.koin.test.junit4)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+// 單元測試：在 Build 視窗與終端機逐項印出每個測試的結果，失敗時印出完整的錯誤訊息與位置。
+tasks.withType<Test>().configureEach {
+    testLogging {
+        events(
+            org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,
+            org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
+            org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED,
+        )
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+        // 印出測試裡 println 的內容（例如 verifyCases 逐筆的結果）。
+        showStandardStreams = true
+    }
 }

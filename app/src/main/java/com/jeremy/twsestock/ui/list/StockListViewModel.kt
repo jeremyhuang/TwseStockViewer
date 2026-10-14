@@ -109,7 +109,7 @@ class StockListViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e(TAG, "載入股票資料失敗", e)
             } finally {
                 isLoading.value = false
             }
